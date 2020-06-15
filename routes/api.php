@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['prefix' => 'projects/v1'], function(){
     Route::post('create', ['as' => 'project.create', 'uses' => 'ProjectController@store']);
-    Route::get('list', ['as' => 'project.index', 'uses' => 'ProjectController@index']);
+    Route::get('list/{type}', ['as' => 'project.index', 'uses' => 'ProjectController@index']);
     Route::get('delete/{id}', ['as' => 'project.delete', 'uses' => 'ProjectController@destroy']);
+    Route::post('addtype', ['as' => 'project.addtype', 'uses' => 'ProjectController@addType']);
 });

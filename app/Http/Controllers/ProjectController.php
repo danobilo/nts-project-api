@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProjectTypeRequest;
 use App\Project;
+use App\Type;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use stdClass;
@@ -14,15 +16,35 @@ class ProjectController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($type)
     {
-        $projects = Project::where('is_visible', '=', 1)
+
+        $top_root = array();
+
+        if ($type > 0) {
+
+            $f_projects = Project::whereHas('types', function ($query) use ($type) {
+                $query->where("project_type.type_id", "=", $type);
+            })->where('is_visible', '=', 1)
+                ->where('parent_id', '=', 0)
+                ->orderBy('id', 'asc')
+                ->get();
+
+            foreach ($f_projects as $f_project) {
+                $top_root[] = $f_project->id;
+            }
+
+        }
+
+        $projects = Project::with('types')
+            ->where('is_visible', '=', 1)
             ->orderByRaw('parent_id = 0', 'desc')
             ->orderBy('id', 'asc')
             ->get();
 
         $objects = array();
         $roots = array();
+
         foreach ($projects as $project) {
             if (!isset($objects[$project->id])) {
                 $objects[$project->id] = new stdClass;
@@ -33,9 +55,19 @@ class ProjectController extends Controller
             $obj->title = $project->title;
             $obj->id = $project->id;
             $obj->parent_id = $project->parent_id;
+            $obj->types = $project->types;
+
 
             if ($project->parent_id == 0) {
-                $roots[] = $obj;
+
+                if ($type > 0) {
+                    if (in_array($project->id, $top_root)) {
+                        $roots[] = $obj;
+                    }
+                } else {
+                    $roots[] = $obj;
+                }
+
             } else {
                 if (!isset($objects[$project->parent_id])) {
                     $objects[$project->parent_id] = new stdClass;
@@ -45,6 +77,7 @@ class ProjectController extends Controller
                 $objects[$project->parent_id]->children[$project->id] = $obj;
             }
         }
+
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<tree id="0">';
@@ -61,7 +94,12 @@ class ProjectController extends Controller
     public function printXML(stdClass $obj, $isRoot = false)
     {
 
+
         $xml = "<item id='" . $obj->id . "' text='" . $obj->title . "'>";
+
+        foreach ($obj->types as $type) {
+            $xml .= "<userdata $type->name='1' />";
+        }
 
         foreach ($obj->children as $child) {
             $xml .= $this->printXML($child);
@@ -168,4 +206,29 @@ class ProjectController extends Controller
 
         return $response;
     }
+
+    public function addType(ProjectTypeRequest $request)
+    {
+//        dd($request->ids);
+
+        $type = Type::find($request->type_id);
+
+        if ($request->get('n_value') == '1') {
+            $type->projects()->attach($request->get('ids'));
+        }
+
+        if ($request->get('n_value') == '0') {
+            $type->projects()->detach($request->get('ids'));
+        }
+
+
+        $response = Response::json([
+            'success' => true,
+            'message' => 'The project has been updated.'
+        ], 200);
+
+        return $response;
+
+    }
+
 }
