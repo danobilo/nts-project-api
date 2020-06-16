@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProjectTypeRequest;
+use App\Http\Resources\ProjectResource;
 use App\Project;
 use App\Type;
 use Illuminate\Http\Request;
@@ -161,7 +162,11 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        //
+        $project = collect(new ProjectResource(Project::find($id)));
+
+        $project->toArray();
+
+        return response()->xml($project, $status = 200, [], $xmlRoot = 'data');
     }
 
     /**
@@ -173,7 +178,39 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if (!$request->title) {
+
+            $response = Response::json([
+                'error' => [
+                    'message' => 'Please enter all required fields'
+                ]
+            ], 422);
+            return $response;
+        }
+
+        $project = Project::find($id);
+        $project->title = $request->title;
+        $project->goal = $request->goal;
+        $project->input = $request->input;
+        $project->output = $request->output;
+//        $project->scope = $request->scope;
+        $project->is_published = $request->is_published;
+
+        if ($project->save()) {
+
+            $message = 'The project has been updated';
+            $success = true;
+        } else {
+            $message = 'An error occurred while saving';
+            $success = false;
+        }
+
+        $response = Response::json([
+            'message' => $message,
+            'success' => $success
+        ], 200);
+
+        return $response;
     }
 
     /**
@@ -209,7 +246,6 @@ class ProjectController extends Controller
 
     public function addType(ProjectTypeRequest $request)
     {
-//        dd($request->ids);
 
         $type = Type::find($request->type_id);
 

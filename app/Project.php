@@ -12,4 +12,10 @@ class Project extends Model
     {
         return $this->belongsToMany(Type::class);
     }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class);
+    }
+
 }
