@@ -41,4 +41,6 @@ Route::group(['prefix' => 'v1/chapter'], function () {
     Route::get('details/{id}', ['as' => 'chapter.details', 'uses' => 'ChapterController@show']);
     Route::post('update/{id}', ['as' => 'chapter.update', 'uses' => 'ChapterController@update']);
     Route::get('delete/{id}', ['as' => 'chapter.delete', 'uses' => 'ChapterController@destroy']);
+    Route::get('content/show/{id}', ['as' => 'chapter.showcontent', 'uses' => 'ChapterController@showContent']);
+    Route::post('content/update/{id}', ['as' => 'chapter.updatecontent', 'uses' => 'ChapterController@updateContent']);
 });

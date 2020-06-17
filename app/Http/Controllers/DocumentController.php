@@ -150,7 +150,11 @@ class DocumentController extends Controller
      */
     public function show($id)
     {
-        //
+        $document = Document::find($id);
+
+        $document->toArray();
+
+        return response()->xml($document, $status = 200, [], $xmlRoot = 'data');
     }
 
     /**
@@ -162,7 +166,29 @@ class DocumentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if (!$request->title) {
+
+            $response = Response::json([
+                'error' => [
+                    'message' => 'Please enter all required fields'
+                ]
+            ], 422);
+            return $response;
+        }
+
+        $document = Document::find($id);
+        $document->title = $request->title;
+        $document->category = $request->category;
+        $document->is_published = $request->is_published;
+        $document->save();
+
+        $response = Response::json([
+            'success' => true,
+            'message' => 'The document has been updated.',
+            'data' => $document,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -195,4 +221,5 @@ class DocumentController extends Controller
 
         return $response;
     }
+
 }

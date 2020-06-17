@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Chapter;
+use App\Http\Resources\ChapterResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -81,7 +82,11 @@ class ChapterController extends Controller
      */
     public function show($id)
     {
-        //
+        $chapter = collect(new ChapterResource(Chapter::find($id)));
+
+        $chapter->toArray();
+
+        return response()->xml($chapter, $status = 200, [], $xmlRoot = 'data');
     }
 
     /**
@@ -93,7 +98,27 @@ class ChapterController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        if (!$request->title) {
+
+            $response = Response::json([
+                'error' => [
+                    'message' => 'Please enter all required fields'
+                ]
+            ], 422);
+            return $response;
+        }
+
+        $chapter = Chapter::find($id);
+        $chapter->title = $request->title;
+        $chapter->save();
+
+        $response = Response::json([
+            'success' => true,
+            'message' => 'The chapter has been updated.',
+            'data' => $chapter,
+        ]);
+
+        return $response;
     }
 
     /**
@@ -121,6 +146,48 @@ class ChapterController extends Controller
             'message' => 'The chapter has been deleted.'
 
         ]);
+
+        return $response;
+    }
+
+    public function showContent($id)
+    {
+        $chapter = Chapter::find($id);
+
+        $response = Response::json([
+            'success' => true,
+            'content' => $chapter->content
+        ]);
+
+        return $response;
+
+    }
+
+    public function updateContent(Request $request, $id)
+    {
+
+        $chapter = Chapter::find($id);
+
+        $chapter->content = $request->notes;
+
+        if ($chapter->save()) {
+
+            $message = 'The chapter has been updated';
+
+            $response = Response::json([
+                'message' => $message,
+                'chapter' => $chapter->id,
+                'success' => true
+            ]);
+        } else {
+            $message = 'An error occurred while saving';
+
+            $response = Response::json([
+                'message' => $message,
+                'success' => false
+            ]);
+        }
+
 
         return $response;
     }
