@@ -191,4 +191,35 @@ class ChapterController extends Controller
 
         return $response;
     }
+
+    public function editCell(Request $request)
+    {
+
+        $id = $request->get('id');
+        $field_value = $request->get('nvalue');
+        $field = $request->get('colId');
+
+        $chapter = Chapter::find($id);
+        $chapter->{$field} = $field_value;
+
+        if ($chapter->save()) {
+
+            $message = 'The chapter has been updated';
+
+            $response = Response::json([
+                'message' => $message,
+                'success' => true
+            ]);
+        } else {
+            $message = 'An error occurred while saving';
+
+            $response = Response::json([
+                'message' => $message,
+                'success' => false
+            ]);
+        }
+
+        return $response;
+
+    }
 }

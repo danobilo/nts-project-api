@@ -10,6 +10,8 @@ use stdClass;
 
 class DocumentController extends Controller
 {
+
+    public static $toc = '<h4>Table of Content</h4>';
     /**
      * Display a listing of the resource.
      *
@@ -221,5 +223,124 @@ class DocumentController extends Controller
 
         return $response;
     }
+
+    public function  showContent($id){
+
+        $doc_str = '';
+
+        $doc_str = self::generate_document($id, $doc_str);
+
+        $response = Response::json([
+            'success' => true,
+            'content' => $doc_str
+        ]);
+
+        return $response;
+
+    }
+
+
+    public static function generate_document($id, $doc_str) {
+
+        $chapters = Chapter::where('document_id', '=', $id)
+            ->orderByRaw('parent_id = 0', 'desc')
+            ->orderBy('sort_id', 'asc')
+            ->get();
+
+        $objects = array();
+        $roots = array();
+        foreach ($chapters as $chapter) {
+
+            if (!isset($objects[$chapter->id])) {
+                $objects[$chapter->id] = new stdClass;
+                $objects[$chapter->id]->children = array();
+            }
+
+            $obj = $objects[$chapter->id];
+            $obj->id = $chapter->id;
+            $obj->title = $chapter->title;
+            $obj->sort = $chapter->sort_id;
+            $obj->content = $chapter->content;
+
+            if ($chapter->parent_id == 0) {
+                $roots[] = $obj;
+            } else {
+                if (!isset($objects[$chapter->parent_id])) {
+                    $objects[$chapter->parent_id] = new stdClass;
+                    $objects[$chapter->parent_id]->children = array();
+                }
+
+                $objects[$chapter->parent_id]->children[$chapter->id] = $obj;
+            }
+        }
+
+        foreach ($roots as $obj) {
+            $doc_str = self::print_document($obj, $doc_str, '', true);
+        }
+
+//    $doc_str .= '<br/>';
+//    $doc_str .= '<a href="#">Move to top</a>';
+//    $doc_str .= '<br/>';
+
+        return self::$toc . $doc_str;
+    }
+
+    public static function print_document(stdClass $obj, $doc_str, $chapter, $isRoot = false) {
+
+//        global $toc;
+        if ($isRoot) {
+            $link = $obj->sort;
+            $chapter = $obj->sort . '.';
+            self::$toc .= '<a href="#C' . $link . '">' . $chapter . ' ' . $obj->title . '</a><br />';
+            $doc_str .= '<h4 id="C' . $link . '">' . $chapter . ' ' . $obj->title . '</h4>';
+        } else {
+            $link = '_' . $obj->sort;
+            $chapter .= $obj->sort . '.';
+            self::$toc .= '<a href="#C' . $link . '">' . $chapter . ' ' . $obj->title . '</a><br />';
+            $doc_str .= '<h5 id="C' . $link . '">' . $chapter . ' ' . $obj->title . '</h5>';
+        }
+
+        $doc_str .= $obj->content;
+        $doc_str .= '<br />';
+
+        foreach ($obj->children as $child) {
+            $doc_str = self::print_document($child, $doc_str, $chapter);
+        }
+
+        return $doc_str;
+    }
+
+    public function editCell(Request $request)
+    {
+
+        $id = $request->get('id');
+        $field_value = $request->get('nvalue');
+        $field = $request->get('colId');
+
+        $document = Document::find($id);
+        $document->{$field} = $field_value;
+
+        if ($document->save()) {
+
+            $message = 'The document has been updated';
+
+            $response = Response::json([
+                'message' => $message,
+                'success' => true
+            ]);
+        } else {
+            $message = 'An error occurred while saving';
+
+            $response = Response::json([
+                'message' => $message,
+                'success' => false
+            ]);
+        }
+
+        return $response;
+
+    }
+
+
 
 }

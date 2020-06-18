@@ -33,6 +33,8 @@ Route::group(['prefix' => 'v1/document'], function () {
     Route::get('details/{id}', ['as' => 'document.details', 'uses' => 'DocumentController@show']);
     Route::post('update/{id}', ['as' => 'document.update', 'uses' => 'DocumentController@update']);
     Route::post('delete/{id}', ['as' => 'document.delete', 'uses' => 'DocumentController@destroy']);
+    Route::get('content/show/{id}', ['as' => 'document.showcontent', 'uses' => 'DocumentController@showContent']);
+    Route::post('editcell', ['as' => 'document.updatecol', 'uses' => 'DocumentController@editCell']);
 });
 
 Route::group(['prefix' => 'v1/chapter'], function () {
@@ -43,4 +45,16 @@ Route::group(['prefix' => 'v1/chapter'], function () {
     Route::get('delete/{id}', ['as' => 'chapter.delete', 'uses' => 'ChapterController@destroy']);
     Route::get('content/show/{id}', ['as' => 'chapter.showcontent', 'uses' => 'ChapterController@showContent']);
     Route::post('content/update/{id}', ['as' => 'chapter.updatecontent', 'uses' => 'ChapterController@updateContent']);
+    Route::post('editcell', ['as' => 'chapter.updatecol', 'uses' => 'ChapterController@editCell']);
+});
+
+Route::group(['prefix' => 'v1/event'], function () {
+    Route::post('create', ['as' => 'event.create', 'uses' => 'EventController@store']);
+    Route::get('list/{pId}/{type}/{id}', ['as' => 'event.index', 'uses' => 'EventController@index']);
+    Route::get('details/{id}', ['as' => 'event.details', 'uses' => 'EventController@show']);
+    Route::post('update/{id}', ['as' => 'event.update', 'uses' => 'EventController@update']);
+    Route::get('delete/{id}', ['as' => 'event.delete', 'uses' => 'EventController@destroy']);
+    Route::get('content/show/{id}', ['as' => 'event.showcontent', 'uses' => 'EventController@showContent']);
+    Route::post('content/update/{id}', ['as' => 'event.updatecontent', 'uses' => 'EventController@updateContent']);
+    Route::post('editcell', ['as' => 'event.updatecol', 'uses' => 'EventController@editCell']);
 });
