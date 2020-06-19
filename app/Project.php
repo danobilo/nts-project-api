@@ -10,12 +10,22 @@ class Project extends Model
 
     public function types()
     {
-        return $this->belongsToMany(Type::class);
+        return $this->belongsToMany(Type::class)->withTimestamps();
     }
 
     public function documents()
     {
-        return $this->belongsToMany(Document::class);
+        return $this->belongsToMany(Document::class)->withTimestamps();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class)->withTimestamps();
     }
 
     public static function generateProjectId($itemId)

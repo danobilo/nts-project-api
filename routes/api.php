@@ -54,7 +54,11 @@ Route::group(['prefix' => 'v1/event'], function () {
     Route::get('details/{id}', ['as' => 'event.details', 'uses' => 'EventController@show']);
     Route::post('update/{id}', ['as' => 'event.update', 'uses' => 'EventController@update']);
     Route::get('delete/{id}', ['as' => 'event.delete', 'uses' => 'EventController@destroy']);
-    Route::get('content/show/{id}', ['as' => 'event.showcontent', 'uses' => 'EventController@showContent']);
-    Route::post('content/update/{id}', ['as' => 'event.updatecontent', 'uses' => 'EventController@updateContent']);
+    Route::get('user/list', ['as' => 'event.userlist', 'uses' => 'EventController@getUserList']);
+    Route::get('assigned/{event_id}', ['as' => 'event.assigned', 'uses' => 'EventController@getAssignedUsers']);
+    Route::get('days/{event_id}', ['as' => 'event.days', 'uses' => 'EventController@getAssignedDays']);
+    Route::post('add/user', ['as' => 'event.adduser', 'uses' => 'EventController@attachUser']);
     Route::post('editcell', ['as' => 'event.updatecol', 'uses' => 'EventController@editCell']);
+    Route::get('generate/{event_id}', ['as' => 'event.generate', 'uses' => 'EventController@generateEvents']);
+    Route::get('reoccurences/{event_id}', ['as' => 'event.reoccurences', 'uses' => 'EventController@getChildEvents']);
 });

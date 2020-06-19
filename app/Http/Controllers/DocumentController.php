@@ -21,9 +21,9 @@ class DocumentController extends Controller
     {
         $documents = Document::whereHas('projects', function ($query) use ($pId) {
             $query->where("document_project.project_id", "=", $pId);
-        })->get();
+        })->with('author')->get();
 
-        $chapters = Chapter::all();
+        $chapters = Chapter::with('author')->get();
 
         $objects = array();
         $roots = array();
@@ -38,7 +38,7 @@ class DocumentController extends Controller
             $obj->id = $chapter->id;
             $obj->sort = $chapter->sort_id;
             $obj->document_id = $chapter->document_id;
-            $obj->author = $chapter->user_id;
+            $obj->author = $chapter->author->name;
             $obj->created_at = $chapter->created_at;
 
             if ($chapter->parent_id == 0) {
@@ -60,7 +60,7 @@ class DocumentController extends Controller
             $xml .= '<row id="doc_' . $document->id . '">';
             $xml .= '<cell>' . $document->id . '</cell>';
             $xml .= "<cell image=\"folder.gif\"><![CDATA[" . $document->title . "]]></cell>";
-            $xml .= "<cell><![CDATA[" . $document->user_id . "]]></cell>";
+            $xml .= "<cell><![CDATA[" . $document->author->name . "]]></cell>";
             $xml .= "<cell><![CDATA[" . $document->created_at . "]]></cell>";
             $xml .= "<cell><![CDATA[" . $document->is_published . "]]></cell>";
 

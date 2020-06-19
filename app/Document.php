@@ -8,8 +8,18 @@ class Document extends Model
 {
     protected $guarded = ['id'];
 
+    public function author()
+    {
+        return $this->belongsTo('App\User', 'user_id', 'id');
+    }
+
+    public function chapters()
+    {
+        return $this->hasMany('App\Chapter')->withTimestamps();
+    }
+
     public function projects()
     {
-        return $this->belongsToMany(Project::class);
+        return $this->belongsToMany('App\Project')->withTimestamps();
     }
 }

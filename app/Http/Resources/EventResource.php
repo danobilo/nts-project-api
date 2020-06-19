@@ -23,8 +23,7 @@ class EventResource extends JsonResource
             'data' => [
                 $this->id,
                 $this->details,
-//                $this->creator->name,
-                $this->user_id,
+                $this->creator->name,
                 implode(", ", $assigned),
                 (string)$this->start_date,
                 (string)$this->end_date,

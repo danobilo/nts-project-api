@@ -132,7 +132,7 @@ class ProjectController extends Controller
         ));
 
         if ($project->save()) {
-//            $project->users()->attach($user_id);
+            $project->users()->attach($user_id);
 
             $message = 'The project has been created succesfully';
 
@@ -140,14 +140,14 @@ class ProjectController extends Controller
                 'message' => $message,
                 'project' => $project,
                 'success' => true
-            ], 201);
+            ]);
         } else {
             $message = 'An error occurred while saving';
 
             $response = Response::json([
                 'message' => $message,
                 'success' => false
-            ], 200);
+            ]);
         }
 
 
