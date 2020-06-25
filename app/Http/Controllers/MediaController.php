@@ -30,12 +30,19 @@ class MediaController extends Controller
     {
         $this->validate($request, [
             // nullable == optional
-            // apache max upload 2mb
-            'file' => 'nullable|max:1999'
+            'file' => 'required|file|mimes:pdf,doc,mp3,mp4'
         ]);
 
         $project = Project::find($id);
-        $project_name = Project::generateProjectId($project->id).'_'.strtolower(str_replace(' ','_',$project->title));
+        $project_name = Project::generateProjectId($project->id); //.'_'.strtolower(str_replace(' ','_',$project->title));
+
+
+        $sort_id = DB::table('media')
+            ->select(DB::raw('IF((MAX(sort_id)>0),MAX(sort_id)+1,1) as sort_id'))
+            ->where('parent_id', 0)
+            ->value('sort_id');
+
+        $file_name = $project_name.'_'.strtolower(str_replace(' ','_',$project->title)).'_'.$sort_id;
 
 
 
@@ -51,20 +58,18 @@ class MediaController extends Controller
             $filesize = $request->file('file')->getSize();
             //Filename to store
 //            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
+            $fileNameToStore = $file_name . '.' . $extension;
             // Upload Image
-            $path = $request->file('file')->store($project_name.'/'.$type, 'media');
+            $path = $request->file('file')->storeAs($project_name.'/'.$type.'/'.$sort_id, $fileNameToStore, 'media');
         }
 
         $user_id = 1;//Auth::id();
 
-        $sort_id = DB::table('media')
-            ->select(DB::raw('IF((MAX(sort_id)>0),MAX(sort_id)+1,1) as sort_id'))
-            ->where('parent_id', 0)
-            ->value('sort_id');
+
 
         // create Post
         $media = new Media;
-        $media->file_name = $filenameWithExt;
+        $media->file_name = $file_name;
         $media->size = $filesize;
         $media->type = $type;
         $media->extension = $extension;
