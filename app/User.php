@@ -51,4 +51,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Project::class)->withTimestamps();
     }
+
+    public function files()
+    {
+        return $this->hasMany(File::class);
+    }
 }

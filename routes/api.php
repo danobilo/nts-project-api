@@ -62,3 +62,19 @@ Route::group(['prefix' => 'v1/event'], function () {
     Route::get('generate/{event_id}', ['as' => 'event.generate', 'uses' => 'EventController@generateEvents']);
     Route::get('reoccurences/{event_id}', ['as' => 'event.reoccurences', 'uses' => 'EventController@getChildEvents']);
 });
+
+Route::group(['prefix' => 'v1/file'], function () {
+    Route::post('upload/{id}/{type}', ['as' => 'file.upload', 'uses' => 'FileController@store']);
+    Route::get('list/{type}/{id}', ['as' => 'file.index', 'uses' => 'FileController@index']);
+    Route::get('details/{id}', ['as' => 'file.details', 'uses' => 'FileController@show']);
+    Route::post('update/{id}', ['as' => 'file.update', 'uses' => 'FileController@update']);
+    Route::get('delete/{id}', ['as' => 'file.delete', 'uses' => 'FileController@destroy']);
+});
+
+Route::group(['prefix' => 'v1/media'], function () {
+    Route::post('upload/{id}/{type}', ['as' => 'media.upload', 'uses' => 'MediaController@store']);
+    Route::get('list/{type}/{id}', ['as' => 'media.index', 'uses' => 'MediaController@index']);
+    Route::get('details/{id}', ['as' => 'media.details', 'uses' => 'MediaController@show']);
+    Route::post('update/{id}', ['as' => 'media.update', 'uses' => 'MediaController@update']);
+    Route::get('delete/{id}', ['as' => 'media.delete', 'uses' => 'MediaController@destroy']);
+});
