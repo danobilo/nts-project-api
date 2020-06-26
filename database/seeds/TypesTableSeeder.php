@@ -22,7 +22,7 @@ class TypesTableSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'name' => 'Moodle',
+                'name' => 'Moodle'
             ]
         ]);
     }

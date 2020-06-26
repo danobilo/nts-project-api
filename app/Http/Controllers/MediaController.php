@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\UploadMedia;
 use App\Media;
 use App\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+
 
 class MediaController extends Controller
 {
@@ -23,14 +25,14 @@ class MediaController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request, $id, $type)
     {
         $this->validate($request, [
             // nullable == optional
-            'file' => 'required|file|mimes:pdf,doc,mp3,mp4'
+//            'file' => 'required|file|mimes:pdf,doc,mp3,mp4'
         ]);
 
         $project = Project::find($id);
@@ -42,8 +44,7 @@ class MediaController extends Controller
             ->where('parent_id', 0)
             ->value('sort_id');
 
-        $file_name = $project_name.'_'.strtolower(str_replace(' ','_',$project->title)).'_'.$sort_id;
-
+        $file_name = $project_name . '_' . strtolower(str_replace(' ', '_', $project->title)) . '_' . $sort_id;
 
 
         // Handle File Upload
@@ -59,12 +60,15 @@ class MediaController extends Controller
             //Filename to store
 //            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
             $fileNameToStore = $file_name . '.' . $extension;
+            $file_path = $project_name . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $sort_id;
             // Upload Image
-            $path = $request->file('file')->storeAs($project_name.'/'.$type.'/'.$sort_id, $fileNameToStore, 'media');
+//            $path = $request->file('file')->storeAs($file_path, $fileNameToStore, 'media');
+            $realpath = $request->file('file')->getRealPath();
         }
 
-        $user_id = 1;//Auth::id();
+//        dd($realpath);
 
+        $user_id = 1;//Auth::id();
 
 
         // create Post
@@ -74,10 +78,22 @@ class MediaController extends Controller
         $media->type = $type;
         $media->extension = $extension;
         $media->sort_id = $sort_id;
-        $media->path = $path;
+        $media->path = $file_path . DIRECTORY_SEPARATOR . $fileNameToStore;
+        $media->tmp_path = $realpath;
         $media->user_id = $user_id;
 
         $media->save();
+
+//        $request->path = $file_path;
+//        $request->file_name = $fileNameToStore;
+
+//        dd($request->all());
+
+        UploadMedia::dispatch($request->all());
+
+
+
+//        $request->file('file')->storeAs($file_path, $fileNameToStore, 'media');
 
         $message = 'Your file has been added successfully';
 
@@ -96,7 +112,7 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -107,8 +123,8 @@ class MediaController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -119,7 +135,7 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
