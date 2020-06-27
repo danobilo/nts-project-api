@@ -73,7 +73,7 @@ Route::group(['prefix' => 'v1/file'], function () {
 
 Route::group(['prefix' => 'v1/media'], function () {
     Route::post('upload/{id}/{type}', ['as' => 'media.upload', 'uses' => 'MediaController@store']);
-    Route::get('list/{type}/{id}', ['as' => 'media.index', 'uses' => 'MediaController@index']);
+    Route::get('list/{pId}', ['as' => 'media.index', 'uses' => 'MediaController@index']);
     Route::get('details/{id}', ['as' => 'media.details', 'uses' => 'MediaController@show']);
     Route::post('update/{id}', ['as' => 'media.update', 'uses' => 'MediaController@update']);
     Route::get('delete/{id}', ['as' => 'media.delete', 'uses' => 'MediaController@destroy']);

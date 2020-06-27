@@ -12,4 +12,14 @@ class Media extends Model
     {
         return $this->belongsTo('App\User','user_id','id');
     }
+
+    public function documents()
+    {
+        return $this->belongsToMany(Document::class)->withTimestamps();
+    }
+
+    public function chapters()
+    {
+        return $this->belongsToMany(Chapter::class)->withTimestamps();
+    }
 }

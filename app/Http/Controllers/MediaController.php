@@ -8,6 +8,8 @@ use App\Project;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Str;
+use stdClass;
 
 
 class MediaController extends Controller
@@ -17,9 +19,87 @@ class MediaController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($pId)
     {
-        //
+
+        $files = Media::where('is_new', '=', 1)
+            ->orderByRaw('parent_id = 0', 'desc')
+            ->orderBy('id', 'asc')
+            ->get();
+
+        $objects = array();
+        $roots = array();
+
+        foreach ($files as $media) {
+            if (!isset($objects[$media->id])) {
+                $objects[$media->id] = new stdClass;
+                $objects[$media->id]->children = array();
+            }
+
+            $obj = $objects[$media->id];
+
+            $obj->id = $media->id;
+            $obj->name = $media->file_name;
+            $obj->parent_id = $media->parent_id;
+            $obj->sort_id = $media->sort_id;
+            $obj->start_time = $media->start_time;
+            $obj->end_time = $media->end_time;
+            $obj->path = $media->path;
+            $obj->type = $media->type;
+            $obj->created_at = $media->created_at;
+
+
+            if ($media->parent_id == 0) {
+                $roots[] = $obj;
+
+            } else {
+                if (!isset($objects[$media->parent_id])) {
+                    $objects[$media->parent_id] = new stdClass;
+                    $objects[$media->parent_id]->children = array();
+                }
+
+                $objects[$media->parent_id]->children[$media->id] = $obj;
+            }
+        }
+
+
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<rows>';
+
+        foreach ($roots as $obj) {
+            $xml .= self::print_xml($obj, true);
+        }
+
+        $xml .= '</rows>';
+
+        return response()->xml($xml);
+    }
+
+    public static function print_xml(stdClass $obj, $isRoot = false)
+    {
+
+        $link = 'https://video.nts.nl/uploads/'.$obj->path;
+
+        $xml = '<row id="' . $obj->id . '">';
+
+//        if (!$isRoot && count($obj->children) == 0) {
+            $xml .= '<cell>' . $obj->name . '</cell>';
+//        } else {
+//            $xml .= '<cell image="folder.gif">' . $obj->name . '</cell>';
+//        }
+        $xml .= "<cell><![CDATA[" . $link . "]]></cell>";
+        $xml .= "<cell><![CDATA[" . $obj->start_time . "]]></cell>";
+        $xml .= "<cell><![CDATA[" . $obj->end_time . "]]></cell>";
+        $xml .= "<cell><![CDATA[" . $obj->created_at . "]]></cell>";
+        $xml .= "<cell><![CDATA[" . Str::title($obj->type) . "]]></cell>";
+
+        foreach ($obj->children as $child) {
+            $xml .= self::print_xml($child);
+        }
+
+        $xml .= '</row>';
+
+        return $xml;
     }
 
     /**
@@ -62,8 +142,7 @@ class MediaController extends Controller
             $fileNameToStore = $file_name . '.' . $extension;
             $file_path = $project_name . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $sort_id;
             // Upload Image
-//            $path = $request->file('file')->storeAs($file_path, $fileNameToStore, 'media');
-            $realpath = $request->file('file')->getRealPath();
+            $path = $request->file('file')->storeAs($file_path, $fileNameToStore);
         }
 
 //        dd($realpath);
@@ -78,9 +157,9 @@ class MediaController extends Controller
         $media->type = $type;
         $media->extension = $extension;
         $media->sort_id = $sort_id;
-        $media->path = $file_path . DIRECTORY_SEPARATOR . $fileNameToStore;
-        $media->tmp_path = $realpath;
+        $media->path = $path; //$file_path . DIRECTORY_SEPARATOR . $fileNameToStore;
         $media->user_id = $user_id;
+        $media->project_id = $id;
 
         $media->save();
 
@@ -89,11 +168,10 @@ class MediaController extends Controller
 
 //        dd($request->all());
 
-        UploadMedia::dispatch($request->all());
+        UploadMedia::dispatch($media);
 
 
-
-//        $request->file('file')->storeAs($file_path, $fileNameToStore, 'media');
+//        $request->file('file')->storeAs($file_path, $fileNameToStore);
 
         $message = 'Your file has been added successfully';
 

@@ -341,6 +341,27 @@ class DocumentController extends Controller
 
     }
 
+    public function addMedia(Request $request)
+    {
 
+        $type = Type::find($request->type_id);
+
+        if ($request->get('n_value') == '1') {
+            $type->projects()->attach($request->get('ids'));
+        }
+
+        if ($request->get('n_value') == '0') {
+            $type->projects()->detach($request->get('ids'));
+        }
+
+
+        $response = Response::json([
+            'success' => true,
+            'message' => 'The project has been updated.'
+        ], 200);
+
+        return $response;
+
+    }
 
 }

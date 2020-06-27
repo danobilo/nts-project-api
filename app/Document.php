@@ -22,4 +22,9 @@ class Document extends Model
     {
         return $this->belongsToMany('App\Project')->withTimestamps();
     }
+
+    public function media()
+    {
+        return $this->belongsToMany(Media::class)->withTimestamps();
+    }
 }

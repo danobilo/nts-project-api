@@ -23,7 +23,7 @@ class UploadMedia implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(array $media)
+    public function __construct(Media $media)
     {
         $this->media = $media;
     }
@@ -37,9 +37,13 @@ class UploadMedia implements ShouldQueue
     {
 //        $this->request->file('file')->storeAs($this->request->path, $this->request->file_name, 'public');
 
-        $path = $this->media->file('file')->store('projects', 'public');
-//        $path = $this->media->tmp_path->store('projects', 'public');
+        $contents = Storage::get($this->media->path);
 
-//        Storage::disk('public')->put('projects/1', $this->media->tmp_path);
+        Storage::disk('media')->put($this->media->path, $contents);
+
+//        unlink(storage_path('app').$this->media->path);
+
+//        Storage::disk('local')->delete($this->media->path);
+
     }
 }

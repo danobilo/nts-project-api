@@ -22,11 +22,11 @@ class CreateMediaTable extends Migration
             $table->unsignedInteger('size')->nullable();
             $table->string('type',50);
             $table->text('path');
-            $table->text('tmp_path')->nullable();
             $table->string('start_time',80)->nullable();
             $table->string('end_time',80)->nullable();
             $table->unsignedInteger('user_id');
             $table->unsignedTinyInteger('is_new')->default(1);
+            $table->unsignedInteger('project_id')->index();
             $table->timestamps();
         });
     }

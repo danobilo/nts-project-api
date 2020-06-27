@@ -17,4 +17,10 @@ class Chapter extends Model
     {
         return $this->belongsTo('App\Document');
     }
+
+
+    public function media()
+    {
+        return $this->belongsToMany(Media::class)->withTimestamps();
+    }
 }
