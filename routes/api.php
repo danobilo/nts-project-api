@@ -35,6 +35,8 @@ Route::group(['prefix' => 'v1/document'], function () {
     Route::post('delete/{id}', ['as' => 'document.delete', 'uses' => 'DocumentController@destroy']);
     Route::get('content/show/{id}', ['as' => 'document.showcontent', 'uses' => 'DocumentController@showContent']);
     Route::post('editcell', ['as' => 'document.updatecol', 'uses' => 'DocumentController@editCell']);
+    Route::get('media/{id}', ['as' => 'document.media', 'uses' => 'DocumentController@getMedia']);
+    Route::post('media', ['as' => 'document.media', 'uses' => 'DocumentController@addMedia']);
 });
 
 Route::group(['prefix' => 'v1/chapter'], function () {
@@ -46,6 +48,8 @@ Route::group(['prefix' => 'v1/chapter'], function () {
     Route::get('content/show/{id}', ['as' => 'chapter.showcontent', 'uses' => 'ChapterController@showContent']);
     Route::post('content/update/{id}', ['as' => 'chapter.updatecontent', 'uses' => 'ChapterController@updateContent']);
     Route::post('editcell', ['as' => 'chapter.updatecol', 'uses' => 'ChapterController@editCell']);
+    Route::get('media/{id}', ['as' => 'document.media', 'uses' => 'ChapterController@getMedia']);
+    Route::post('media', ['as' => 'document.media', 'uses' => 'ChapterController@addMedia']);
 });
 
 Route::group(['prefix' => 'v1/event'], function () {

@@ -22,11 +22,18 @@ class MediaController extends Controller
     public function index($pId)
     {
 
-        $files = Media::where('is_new', '=', 1)
+        $files = Media::where('project_id', '=', $pId)
             ->orderByRaw('parent_id = 0', 'desc')
             ->orderBy('id', 'asc')
             ->get();
 
+        $xml = self::get_media_xml($files);
+
+        return response()->xml($xml);
+    }
+
+    public static function get_media_xml($files)
+    {
         $objects = array();
         $roots = array();
 
@@ -62,7 +69,6 @@ class MediaController extends Controller
             }
         }
 
-
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<rows>';
 
@@ -72,18 +78,18 @@ class MediaController extends Controller
 
         $xml .= '</rows>';
 
-        return response()->xml($xml);
+        return $xml;
     }
 
     public static function print_xml(stdClass $obj, $isRoot = false)
     {
 
-        $link = 'https://video.nts.nl/uploads/'.$obj->path;
+        $link = 'https://video.nts.nl/uploads/' . $obj->path;
 
         $xml = '<row id="' . $obj->id . '">';
 
 //        if (!$isRoot && count($obj->children) == 0) {
-            $xml .= '<cell>' . $obj->name . '</cell>';
+        $xml .= '<cell>' . $obj->name . '</cell>';
 //        } else {
 //            $xml .= '<cell image="folder.gif">' . $obj->name . '</cell>';
 //        }
@@ -168,7 +174,7 @@ class MediaController extends Controller
 
 //        dd($request->all());
 
-        UploadMedia::dispatch($media);
+//        UploadMedia::dispatch($media);
 
 
 //        $request->file('file')->storeAs($file_path, $fileNameToStore);

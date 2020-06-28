@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Chapter;
 use App\Document;
+use App\Media;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use stdClass;
@@ -344,23 +345,34 @@ class DocumentController extends Controller
     public function addMedia(Request $request)
     {
 
-        $type = Type::find($request->type_id);
+        $document = Document::find($request->document_id);
+        $ids = explode(",", $request->get('ids'));
 
         if ($request->get('n_value') == '1') {
-            $type->projects()->attach($request->get('ids'));
+            $document->media()->attach($ids);
         }
 
         if ($request->get('n_value') == '0') {
-            $type->projects()->detach($request->get('ids'));
+            $document->media()->detach($ids);
         }
 
 
         $response = Response::json([
             'success' => true,
-            'message' => 'The project has been updated.'
+            'message' => 'Media added successfully.'
         ], 200);
 
         return $response;
+
+    }
+
+    public function getMedia($id)
+    {
+
+        $document = Document::with('media')->whereId($id)->firstOrFail();
+        $xml = MediaController::get_media_xml($document->media);
+
+        return response()->xml($xml);
 
     }
 

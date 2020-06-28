@@ -222,4 +222,38 @@ class ChapterController extends Controller
         return $response;
 
     }
+
+    public function addMedia(Request $request)
+    {
+
+        $chapter = Chapter::find($request->document_id);
+        $ids = explode(",", $request->get('ids'));
+
+        if ($request->get('n_value') == '1') {
+            $chapter->media()->attach($ids);
+        }
+
+        if ($request->get('n_value') == '0') {
+            $chapter->media()->detach($ids);
+        }
+
+
+        $response = Response::json([
+            'success' => true,
+            'message' => 'Media added successfully.'
+        ], 200);
+
+        return $response;
+
+    }
+
+    public function getMedia($id)
+    {
+
+        $chapter = Chapter::with('media')->whereId($id)->firstOrFail();
+        $xml = MediaController::get_media_xml($chapter->media);
+
+        return response()->xml($xml);
+
+    }
 }
