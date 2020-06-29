@@ -146,9 +146,10 @@ class MediaController extends Controller
             //Filename to store
 //            $fileNameToStore = $filename . '_' . time() . '.' . $extension;
             $fileNameToStore = $file_name . '.' . $extension;
-            $file_path = $project_name . DIRECTORY_SEPARATOR . $type . DIRECTORY_SEPARATOR . $sort_id;
+            $file_path = $project_name . '/' . $type . '/'. $sort_id;
             // Upload Image
-            $path = $request->file('file')->storeAs($file_path, $fileNameToStore);
+//            $path = $request->file('file')->storeAs($file_path, $fileNameToStore);
+            $path = $request->file('file')->storeAs($file_path, $fileNameToStore, 'media');
         }
 
 //        dd($realpath);
@@ -174,7 +175,7 @@ class MediaController extends Controller
 
 //        dd($request->all());
 
-        UploadMedia::dispatch($media);
+//        UploadMedia::dispatch($media);
 
 
 //        $request->file('file')->storeAs($file_path, $fileNameToStore);
