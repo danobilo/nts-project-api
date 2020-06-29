@@ -174,7 +174,7 @@ class MediaController extends Controller
 
 //        dd($request->all());
 
-//        UploadMedia::dispatch($media);
+        UploadMedia::dispatch($media);
 
 
 //        $request->file('file')->storeAs($file_path, $fileNameToStore);
