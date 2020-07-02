@@ -350,6 +350,13 @@ class DocumentController extends Controller
 
         if ($request->get('n_value') == '1') {
             $document->media()->attach($ids);
+
+            //Get the IDs that are already attached
+            $attachedIds = $document->media()->whereIn('id', $ids)->pluck('id');
+            //Remove the attached IDs from the request array
+            $newIds = array_diff($ids, $attachedIds);
+            //Attach the new IDs
+            $document->media()->attach($newIds);
         }
 
         if ($request->get('n_value') == '0') {

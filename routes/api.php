@@ -32,6 +32,23 @@ Route::group([
     });
 });
 
+Route::group(['prefix' => 'v1/user'], function () {
+    Route::post('create', ['as' => 'user.create', 'uses' => 'UserController@store']);
+    Route::get('list', ['as' => 'user.index', 'uses' => 'UserController@index']);
+    Route::get('details/{id}', ['as' => 'user.details', 'uses' => 'UserController@show']);
+    Route::post('update/{id}', ['as' => 'user.update', 'uses' => 'UserController@update']);
+    Route::get('delete/{id}', ['as' => 'user.delete', 'uses' => 'UserController@destroy']);
+    Route::post('projects/add/{id}', ['as' => 'user.add_project', 'uses' => 'UserController@addProjects']);
+    Route::get('projects/get/{id}', ['as' => 'user.get_project', 'uses' => 'UserController@getProjects']);
+});
+
+Route::group(['prefix' => 'v1/role'], function () {
+    Route::post('create', ['as' => 'role.create', 'uses' => 'RolesController@store']);
+    Route::get('list', ['as' => 'role.index', 'uses' => 'RolesController@index']);
+    Route::post('update/{id}', ['as' => 'role.update', 'uses' => 'RolesController@update']);
+    Route::get('selectlist', ['as' => 'role.select_list', 'uses' => 'RolesController@getRolesList']);
+});
+
 Route::group(['prefix' => 'v1/project'], function () {
     Route::post('create', ['as' => 'project.create', 'uses' => 'ProjectController@store']);
     Route::get('list/{type}', ['as' => 'project.index', 'uses' => 'ProjectController@index']);

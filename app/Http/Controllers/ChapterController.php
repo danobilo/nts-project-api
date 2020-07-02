@@ -230,7 +230,13 @@ class ChapterController extends Controller
         $ids = explode(",", $request->get('ids'));
 
         if ($request->get('n_value') == '1') {
-            $chapter->media()->attach($ids);
+
+            //Get the IDs that are already attached
+            $attachedIds = $chapter->media()->whereIn('id', $ids)->pluck('id');
+            //Remove the attached IDs from the request array
+            $newIds = array_diff($ids, $attachedIds);
+            //Attach the new IDs
+            $chapter->media()->attach($newIds);
         }
 
         if ($request->get('n_value') == '0') {
