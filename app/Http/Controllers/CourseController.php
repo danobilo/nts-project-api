@@ -63,13 +63,14 @@ class CourseController extends Controller
         if ($parent === 0) {
 
             $wsfunctionname = 'core_course_get_contents';
-            $params = "&courseid=" . $courseId;
+            $params = array('courseid' => $courseId);
             $serverurl = $domainname . "/webservice/rest/server.php?wstoken=" . $wstoken . "&wsfunction=" . $wsfunctionname;
 
-            $resp = Http::post($serverurl . $restformat . $params);
+            $curl = new curl;
+            $resp = $curl->post($serverurl . $restformat, $params);
             $topics = json_decode($resp);
 
-//            dd($topics);
+
             $xml .= "<rows parent='" . $parent . "'>";
 
             foreach ($topics as $topic) {
@@ -96,10 +97,11 @@ class CourseController extends Controller
             if ($mode == 'a') {
 
                 $wsfunctionname = 'core_course_get_contents';
-                $params = "&courseid=" . $courseId;
+                $params = array('courseid' => $courseId);
                 $serverurl = $domainname . "/webservice/rest/server.php?wstoken=" . $wstoken . "&wsfunction=" . $wsfunctionname;
 
-                $resp = Http::post($serverurl . $restformat . $params);
+                $curl = new curl;
+                $resp = $curl->post($serverurl . $restformat, $params);
                 $topics = json_decode($resp);
 
                 $topic = null;
@@ -132,10 +134,11 @@ class CourseController extends Controller
 
                 $instance = $variableArray[2];
                 $wsfunctionname = 'mod_lesson_get_pages';
-                $params = "&lessonid=" . $instance;
+                $params = array('lessonid' => $instance);
                 $serverurl = $domainname . "/webservice/rest/server.php?wstoken=" . $wstoken . "&wsfunction=" . $wsfunctionname;
 
-                $resp = Http::post($serverurl . $restformat . $params);
+                $curl = new curl;
+                $resp = $curl->post($serverurl . $restformat, $params);
                 $pages = json_decode($resp);
 
                 $xml .= "<rows parent='" . $_GET['id'] . "'>";
