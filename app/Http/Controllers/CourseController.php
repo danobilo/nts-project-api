@@ -28,10 +28,9 @@ class CourseController extends Controller
             $restformat = 'json';
 
             $serverurl = $domainname . "/webservice/rest/server.php?wstoken=" . $wstoken . "&wsfunction=" . $wsfunctionname;
+            $curl = new curl;
             $restformat = ($restformat == 'json') ? '&moodlewsrestformat=' . $restformat : '';
-
-
-            $resp = Http::post($serverurl . $restformat);
+            $resp = $curl->post($serverurl . $restformat);
             $courses = json_decode($resp);
 
             foreach ($courses as $course) {
