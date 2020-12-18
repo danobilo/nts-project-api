@@ -113,3 +113,13 @@ Route::group(['prefix' => 'v1/media'], function () {
     Route::post('update/{id}', ['as' => 'media.update', 'uses' => 'MediaController@update']);
     Route::get('delete/{id}', ['as' => 'media.delete', 'uses' => 'MediaController@destroy']);
 });
+
+Route::group(['prefix' => 'v1/course'], function () {
+    Route::get('list', ['as' => 'courses.index', 'uses' => 'CourseController@fetchCourses']);
+    Route::get('topics/{serverId}/{courseId}', ['as' => 'courses.index', 'uses' => 'CourseController@fetchTopics']);
+    Route::get('lesson/{lessonId}', ['as' => 'courses.lesson', 'uses' => 'CourseController@fetchLessonPage']);
+    Route::get('module/{moduleId}/server/{serverId}/lesson/{lessonId}', ['as' => 'courses.content', 'uses' => 'CourseController@fetchLessonPageContent']);
+    Route::get('page/{moduleId}/server/{serverId}/course/{courseId}', ['as' => 'courses.page', 'uses' => 'CourseController@fetchPageContent']);
+
+
+});
