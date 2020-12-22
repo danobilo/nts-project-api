@@ -173,7 +173,7 @@ class QuestionController extends Controller
             $xml .= "<cell>" . $question->question_id . "</cell>";
             $xml .= "<cell><![CDATA[" . $question->title . "]]></cell>";
             $xml .= "<cell><![CDATA[" . $question->text . "]]></cell>";
-            $xml .= "<cell><![CDATA[" . $question->type . "]]></cell>";
+            $xml .= "<cell><![CDATA[" . QuestionType::getDescription($question->type) . "]]></cell>";
             $xml .= "</row>";
         }
         $xml .= "</rows>";
