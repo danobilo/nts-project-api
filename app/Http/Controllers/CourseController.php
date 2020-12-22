@@ -192,7 +192,7 @@ class CourseController extends Controller
     public function fetchPageContent($moduleId, $serverId, $courseId)
     {
 
-        list($domainname, $wstoken) = getServerDetails($serverId);
+        list($domainname, $wstoken) = $this->getServerDetails($serverId);
         $wsfunctionname = 'mod_page_get_pages_by_courses';
         $restformat = 'json';
 

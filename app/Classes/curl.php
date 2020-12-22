@@ -3,6 +3,8 @@
 
 namespace App\Classes;
 
+use App\Classes\curl_cache;
+
 /**
  * cURL class
  *

@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -26,7 +25,7 @@ Route::group([
 
     Route::group([
         'middleware' => 'auth:api'
-    ], function() {
+    ], function () {
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
     });
@@ -121,5 +120,34 @@ Route::group(['prefix' => 'v1/course'], function () {
     Route::get('module/{moduleId}/server/{serverId}/lesson/{lessonId}', ['as' => 'courses.content', 'uses' => 'CourseController@fetchLessonPageContent']);
     Route::get('page/{moduleId}/server/{serverId}/course/{courseId}', ['as' => 'courses.page', 'uses' => 'CourseController@fetchPageContent']);
 
-
 });
+
+
+Route::group(['prefix' => 'v1/question'], function () {
+    Route::post('create', ['as' => 'question.create', 'uses' => 'QuestionController@createQuestion']);
+    Route::get('list/{courseId}/{pageId?}', ['as' => 'question.index', 'uses' => 'QuestionController@fetchQuestions']);
+    Route::get('delete/{id}', ['as' => 'question.delete', 'uses' => 'QuestionController@deleteQuestion']);
+    Route::post('update_cell', ['as' => 'question.update_cell', 'uses' => 'QuestionController@editQuestionCell']);
+    Route::get('show/{id}', ['as' => 'question.show', 'uses' => 'QuestionController@showQuestion']);
+    Route::post('update/{id}', ['as' => 'question.update', 'uses' => 'QuestionController@updateQuestion']);
+});
+
+Route::group(['prefix' => 'v1/choice'], function () {
+    Route::post('create', ['as' => 'choice.create', 'uses' => 'ChoiceController@createChoice']);
+    Route::get('list/{questionId}', ['as' => 'choice.index', 'uses' => 'ChoiceController@fetchChoices']);
+    Route::get('delete/{id}', ['as' => 'choice.delete', 'uses' => 'ChoiceController@deleteChoice']);
+    Route::post('update_cell', ['as' => 'choice.update_cell', 'uses' => 'ChoiceController@editChoiceCell']);
+    Route::get('show/{id}', ['as' => 'choice.show', 'uses' => 'ChoiceController@showChoice']);
+    Route::post('update/{id}', ['as' => 'choice.update', 'uses' => 'ChoiceController@updateChoice']);
+});
+
+Route::group(['prefix' => 'v1/topic'], function () {
+
+    Route::get('question/delete/{id}', ['as' => 'topic.question.delete', 'uses' => 'QuestionController@deletePageQuestion']);
+    Route::get('question/list/{pageId}', ['as' => 'topic.question.index', 'uses' => 'QuestionController@fetchPageQuestions']);
+    Route::post('question/export', ['as' => 'topic.question.export', 'uses' => 'QuestionController@exportQuestions']);
+    Route::post('question/link', ['as' => 'topic.question.link', 'uses' => 'QuestionController@linkQuestionToPage']);
+});
+
+
+
