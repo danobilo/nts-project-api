@@ -149,5 +149,14 @@ Route::group(['prefix' => 'v1/topic'], function () {
     Route::post('question/link', ['as' => 'topic.question.link', 'uses' => 'QuestionController@linkQuestionToPage']);
 });
 
+Route::group(['prefix' => 'v1/server'], function () {
+    Route::post('create', ['as' => 'server.create', 'uses' => 'ServerController@createServer']);
+    Route::get('list', ['as' => 'server.index', 'uses' => 'ServerController@fetchServers']);
+    Route::get('delete/{id}', ['as' => 'server.delete', 'uses' => 'ServerController@deleteServer']);
+    Route::post('update_cell', ['as' => 'server.update_cell', 'uses' => 'ServerController@editServerCell']);
+    Route::get('show/{id}', ['as' => 'server.show', 'uses' => 'ServerController@showServer']);
+    Route::post('update/{id}', ['as' => 'server.update', 'uses' => 'ServerController@updateServer']);
+});
+
 
 

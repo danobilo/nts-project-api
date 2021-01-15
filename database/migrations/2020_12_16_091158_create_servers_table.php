@@ -19,6 +19,7 @@ class CreateServersTable extends Migration
             $table->string('domain', 255)->nullable();
             $table->text('token')->nullable();
             $table->text('path')->nullable();
+            $table->string('location', 255)->nullable();
             $table->unsignedTinyInteger('is_moodle')->default(1);
             $table->timestamps();
         });
