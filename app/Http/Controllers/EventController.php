@@ -6,14 +6,16 @@ use App\Chapter;
 use App\Document;
 use App\Event;
 use App\Http\Resources\EventFormResource;
-use App\Http\Resources\EventResource;
 use App\Http\Resources\EventUserComboCollection;
 use App\Http\Resources\EventUserResource;
+use App\Http\Resources\scheduleResource;
+use App\Http\Resources\ScheduleUnitResource;
 use App\Project;
 use App\User;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 
 class EventController extends Controller
@@ -45,7 +47,7 @@ class EventController extends Controller
         foreach ($events as $event) {
 
             $assigned = array();
-            if(count($event->users) > 0){
+            if (count($event->users) > 0) {
                 foreach ($event->users as $user) {
                     $assigned[] = $user->name;
                 }
@@ -214,7 +216,8 @@ class EventController extends Controller
         return $response;
     }
 
-    public function getUserList(){
+    public function getUserList()
+    {
 
         $users = new EventUserComboCollection(User::all());
         $response = Response::json($users, 200);
@@ -273,7 +276,6 @@ class EventController extends Controller
 
         return $response;
     }
-
 
 
     public function generateEvents($event_id)
@@ -549,5 +551,39 @@ class EventController extends Controller
 
         return response()->xml($xml);
 
+    }
+
+    public function fetchScheduleEvents()
+    {
+        $events = DB::table('events')
+            ->join('event_user', 'events.id', '=', 'event_user.event_id')
+            ->select('event_user.id', 'event_user.user_id', 'events.title', 'events.start_date', 'events.end_date', 'events.details')
+            ->where('is_visible', '=', 1)
+            ->get();
+
+        $schedule = scheduleResource::collection($events);
+        $response = Response::json($schedule, 200);
+        return $response;
+    }
+
+    public function fetchUserScheduleEvents($id)
+    {
+
+        $events = DB::table('events')
+            ->join('event_user', 'events.id', '=', 'event_user.event_id')
+            ->select('event_user.id', 'event_user.user_id', 'events.title', 'events.start_date', 'events.end_date', 'events.details')
+            ->where([['event_user.user_id', '=', $id], ['is_visible', '=', 1]])
+            ->get();
+
+        $schedule = scheduleResource::collection($events);
+        $response = Response::json($schedule, 200);
+        return $response;
+    }
+
+    public function fetchScheduleUsers()
+    {
+        $users = ScheduleUnitResource::collection(User::all());
+        $response = Response::json($users, 200);
+        return $response;
     }
 }

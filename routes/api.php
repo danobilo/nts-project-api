@@ -158,5 +158,11 @@ Route::group(['prefix' => 'v1/server'], function () {
     Route::post('update/{id}', ['as' => 'server.update', 'uses' => 'ServerController@updateServer']);
 });
 
+Route::group(['prefix' => 'v1/schedule'], function () {
+    Route::get('events', ['as' => 'schedule.index', 'uses' => 'EventController@fetchScheduleEvents']);
+    Route::get('user', ['as' => 'schedule.user', 'uses' => 'EventController@fetchUserScheduleEvents']);
+    Route::get('users', ['as' => 'schedule.users', 'uses' => 'EventController@fetchScheduleUsers']);
+});
+
 
 
