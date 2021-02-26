@@ -28,6 +28,7 @@ Route::group([
     ], function () {
         Route::get('logout', 'AuthController@logout');
         Route::get('user', 'AuthController@user');
+        Route::post('update', 'AuthController@update');
     });
 });
 
@@ -160,7 +161,7 @@ Route::group(['prefix' => 'v1/server'], function () {
 
 Route::group(['prefix' => 'v1/schedule'], function () {
     Route::get('events', ['as' => 'schedule.index', 'uses' => 'EventController@fetchScheduleEvents']);
-    Route::get('user', ['as' => 'schedule.user', 'uses' => 'EventController@fetchUserScheduleEvents']);
+    Route::get('user/{id}', ['as' => 'schedule.user', 'uses' => 'EventController@fetchUserScheduleEvents']);
     Route::get('users', ['as' => 'schedule.users', 'uses' => 'EventController@fetchScheduleUsers']);
 });
 
